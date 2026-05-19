@@ -1,5 +1,8 @@
 name: CI - Build & Package
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main ]
