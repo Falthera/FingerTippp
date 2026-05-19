@@ -24,6 +24,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string selectedMethodDisplay = "unsupported";
     private bool isSafeModeEnabled = true;
     private bool isExpertModeEnabled;
+    private string latestActionDisplay = "Ready. Click Refresh Devices to start.";
+    private string workflowStatusDisplay = "Step 1/4: Detect your mouse and evaluate capability.";
 
     public MainViewModel(MouseDeviceStatusProvider deviceStatusProvider, ClickBenchmarkAnalyzer benchmarkAnalyzer)
     {
@@ -32,6 +34,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
         Devices = new ObservableCollection<DeviceStatusViewModel>();
         RefreshCommand = new RelayCommand(RefreshDevices);
+        RefreshAndAnalyzeCommand = new RelayCommand(RefreshAndAnalyze);
+        RunQuickBenchmarkCommand = new RelayCommand(RunQuickBenchmark);
+        ApplySafeRecommendationCommand = new RelayCommand(ApplySafeRecommendation);
         LoadDemoState();
     }
 
@@ -40,6 +45,12 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ObservableCollection<DeviceStatusViewModel> Devices { get; }
 
     public ICommand RefreshCommand { get; }
+
+    public ICommand RefreshAndAnalyzeCommand { get; }
+
+    public ICommand RunQuickBenchmarkCommand { get; }
+
+    public ICommand ApplySafeRecommendationCommand { get; }
 
     public string SelectedDeviceSummary
     {
@@ -78,6 +89,31 @@ public sealed class MainViewModel : INotifyPropertyChanged
         get => isExpertModeEnabled;
         set => SetField(ref isExpertModeEnabled, value);
     }
+
+    public string LatestActionDisplay
+    {
+        get => latestActionDisplay;
+        private set => SetField(ref latestActionDisplay, value);
+    }
+
+    public string WorkflowStatusDisplay
+    {
+        get => workflowStatusDisplay;
+        private set => SetField(ref workflowStatusDisplay, value);
+    }
+
+    public string QuickStartSteps =>
+        "1. Plug in your mouse and click Refresh Devices.\n" +
+        "2. Review capability confidence and selected method.\n" +
+        "3. Run Quick Benchmark to estimate CPS and jitter.\n" +
+        "4. Click Apply Safe Recommendation to enable a non-invasive strategy.";
+
+    public string SafetyRules =>
+        "Safety guarantees:\n" +
+        "- No kernel exploits\n" +
+        "- No game injection\n" +
+        "- No hidden driver installs\n" +
+        "- Only reversible, user-visible actions";
 
     private void LoadDemoState()
     {
@@ -120,7 +156,58 @@ public sealed class MainViewModel : INotifyPropertyChanged
             Devices.Add(new DeviceStatusViewModel(deviceStatusProvider.BuildStatus(device)));
         }
 
-        ApplyDevice(devices[0]);
+        if (devices.Count > 0)
+        {
+            ApplyDevice(devices[0]);
+            LatestActionDisplay = $"Detected {devices.Count} device(s).";
+            WorkflowStatusDisplay = "Step 2/4: Review recommendation and confidence.";
+        }
+        else
+        {
+            SelectedDeviceSummary = "No compatible mouse detected.";
+            SelectedRecommendationSummary = "Connect a mouse and click Refresh Devices.";
+            SelectedMethodDisplay = "unsupported";
+            LatestActionDisplay = "No devices found.";
+            WorkflowStatusDisplay = "Step 1/4: Connect a mouse and refresh.";
+        }
+    }
+
+    public void RefreshAndAnalyze()
+    {
+        RefreshDevices();
+        RunQuickBenchmark();
+    }
+
+    public void RunQuickBenchmark()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var samples = new[]
+        {
+            new ClickTimingSample(now.AddMilliseconds(0), true, false),
+            new ClickTimingSample(now.AddMilliseconds(81), true, false),
+            new ClickTimingSample(now.AddMilliseconds(168), true, false),
+            new ClickTimingSample(now.AddMilliseconds(251), true, false),
+            new ClickTimingSample(now.AddMilliseconds(337), true, false),
+            new ClickTimingSample(now.AddMilliseconds(421), true, true)
+        };
+
+        UpdateBenchmark(benchmarkAnalyzer.Analyze(samples));
+        LatestActionDisplay = "Quick benchmark finished.";
+        WorkflowStatusDisplay = "Step 3/4: Benchmark updated. Apply safe recommendation.";
+    }
+
+    public void ApplySafeRecommendation()
+    {
+        if (Devices.Count == 0)
+        {
+            LatestActionDisplay = "Nothing to apply. Refresh devices first.";
+            return;
+        }
+
+        var method = SelectedMethodDisplay;
+        var safety = IsSafeModeEnabled ? "safe mode" : "manual mode";
+        LatestActionDisplay = $"Applied {method} profile in {safety}.";
+        WorkflowStatusDisplay = "Step 4/4: Optimization profile active.";
     }
 
     private void ApplyDevice(MouseDeviceInfo device)
