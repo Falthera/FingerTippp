@@ -45,16 +45,17 @@ jobs:
           path: publish/win-x64
 
       - name: Create tag and push (triggers release)
-        if: success()
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          $tag = "v$(Get-Date -Format 'yyyyMMddHHmmss')"
+          $timestamp = Get-Date -Format 'yyyyMMddHHmmss'
+          $tag = "v$timestamp-r${{ github.run_number }}"
           Write-Host "Creating tag $tag"
-          git tag $tag
+          git tag -a $tag -m "Release $tag"
           git push origin $tag
 
       - name: Skip MSI packaging
