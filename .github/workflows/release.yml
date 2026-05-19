@@ -44,11 +44,19 @@ jobs:
         run: |
           $uploadUrl = '${{ steps.create_release.outputs.upload_url }}'
           if (-not $uploadUrl) { Write-Error 'upload_url not found on create_release outputs'; exit 1 }
+          # Remove the templated query part like '{?name,label}' if present
+          $baseUrl = $uploadUrl -replace '\{\?.*\}$',''
           $files = Get-ChildItem -Path publish\win-x64 -File -ErrorAction SilentlyContinue
           if (-not $files) { Write-Host 'No files found in publish\win-x64 to upload'; exit 0 }
           foreach ($f in $files) {
-            $name = $f.Name
-            $uri = "$uploadUrl?name=$name"
-            Write-Host "Uploading $name to release"
-            Invoke-RestMethod -Method Post -Uri $uri -Headers @{ Authorization = "token $env:GITHUB_TOKEN" } -InFile $f.FullName -ContentType 'application/octet-stream'
+            $name = [System.Uri]::EscapeDataString($f.Name)
+            $uri = "$baseUrl?name=$name"
+            Write-Host "Uploading $($f.Name) to $uri"
+            $headers = @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = 'application/vnd.github+json' }
+            try {
+              Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -InFile $f.FullName -ContentType 'application/octet-stream' -ErrorAction Stop
+            } catch {
+              Write-Error "Failed uploading $($f.Name): $($_.Exception.Message)"
+              exit 1
+            }
           }
