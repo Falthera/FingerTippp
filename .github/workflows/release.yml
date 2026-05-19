@@ -50,7 +50,7 @@ jobs:
           if (-not $files) { Write-Host 'No files found in publish\win-x64 to upload'; exit 0 }
           foreach ($f in $files) {
             $name = [System.Uri]::EscapeDataString($f.Name)
-            $uri = "$baseUrl?name=$name"
+            $uri = "${baseUrl}?name=$name"
             Write-Host "Uploading $($f.Name) to $uri"
             $headers = @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = 'application/vnd.github+json' }
             try {
