@@ -26,14 +26,6 @@ jobs:
           dotnet build src/Fingertippp.App/Fingertippp.App.csproj -c Release
           dotnet publish src/Fingertippp.App/Fingertippp.App.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/win-x64
 
-      - name: Install WiX
-        shell: powershell
-        run: choco install wix -y
-
-      - name: Build MSI
-        shell: powershell
-        run: pwsh -File build\create-installer.ps1 -PublishDir "${{ github.workspace }}\publish\win-x64" -OutputDir "${{ github.workspace }}\artifacts"
-
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -45,16 +37,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload EXE artifact to release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: publish/win-x64/*
+      - name: Upload published EXE files to release
+        shell: powershell
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload MSI artifact to release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: artifacts/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $uploadUrl = '${{ steps.create_release.outputs.upload_url }}'
+          if (-not $uploadUrl) { Write-Error 'upload_url not found on create_release outputs'; exit 1 }
+          $files = Get-ChildItem -Path publish\win-x64 -File -ErrorAction SilentlyContinue
+          if (-not $files) { Write-Host 'No files found in publish\win-x64 to upload'; exit 0 }
+          foreach ($f in $files) {
+            $name = $f.Name
+            $uri = "$uploadUrl?name=$name"
+            Write-Host "Uploading $name to release"
+            Invoke-RestMethod -Method Post -Uri $uri -Headers @{ Authorization = "token $env:GITHUB_TOKEN" } -InFile $f.FullName -ContentType 'application/octet-stream'
+          }
