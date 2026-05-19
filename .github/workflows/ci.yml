@@ -41,10 +41,32 @@ jobs:
           name: Fingertippp-publish-win-x64
           path: publish/win-x64
 
-      - name: Install WiX Toolset (choco)
+      - name: Install WiX Toolset (robust)
         shell: powershell
         run: |
-          choco install wix -y
+          $packages = @('wix','wixtoolset','wixtoolset3','wix.toolset')
+          $installed = $false
+          foreach ($p in $packages) {
+            Write-Host "Trying choco install $p -y"
+            try {
+              choco install $p -y -r
+              if ($LASTEXITCODE -eq 0) { $installed = $true; break }
+            } catch {
+              Write-Host "choco install $p failed"
+            }
+          }
+          # verify expected WiX binaries
+          $paths = @(
+            "$env:ProgramFiles\WiX Toolset v3.11\bin\candle.exe",
+            "$env:ProgramFiles\WiX Toolset\bin\candle.exe",
+            (Get-Command candle.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue)
+          ) | Where-Object { $_ }
+          if (-not $paths) {
+            Write-Host "WiX tools not found after choco attempts. Listing ProgramFiles contents for debugging:"
+            Get-ChildItem "$env:ProgramFiles" -Directory | Select-Object -First 50 | ForEach-Object { Write-Host $_.FullName }
+            Write-Error "WiX Toolset (candle.exe/light.exe) not available on runner. Please ensure WiX is installed or update the workflow to provide WiX binaries."
+            exit 1
+          }
 
       - name: Build MSI installer
         shell: powershell
