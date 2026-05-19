@@ -19,14 +19,20 @@
   </Product>
 
   <Fragment>
+    <!-- Define files/components in the INSTALLFOLDER directory -->
     <DirectoryRef Id="INSTALLFOLDER">
-      <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-        <!-- Files are harvested at build time by WiX heat in more advanced setups. For now, assume installer includes any files copied to INSTALLFOLDER before packaging. -->
-        <Component Id="cmpExecutable" Guid="a1b2c3d4-e5f6-4712-9876-0abcde123456">
-          <File Id="filMainExe" Source="publish\win-x64\Fingertippp.App.exe" KeyPath="yes" />
-          <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="Fingertippp" WorkingDirectory="INSTALLFOLDER" Advertise="no" />
-        </Component>
-      </ComponentGroup>
+      <!-- Files are harvested at build time by WiX heat in more advanced setups. -->
+      <Component Id="cmpExecutable" Guid="a1b2c3d4-e5f6-4712-9876-0abcde123456">
+        <File Id="filMainExe" Source="publish\win-x64\Fingertippp.App.exe" KeyPath="yes" />
+        <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="Fingertippp" WorkingDirectory="INSTALLFOLDER" Advertise="no" />
+      </Component>
     </DirectoryRef>
+  </Fragment>
+
+  <Fragment>
+    <!-- ComponentGroup references the components defined in directory fragments -->
+    <ComponentGroup Id="ProductComponents">
+      <ComponentRef Id="cmpExecutable" />
+    </ComponentGroup>
   </Fragment>
 </Wix>
