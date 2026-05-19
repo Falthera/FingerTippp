@@ -1,0 +1,66 @@
+name: CI - Build & Package
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    name: Build (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore src/Fingertippp.App/Fingertippp.App.csproj
+
+      - name: Build
+        run: dotnet build src/Fingertippp.App/Fingertippp.App.csproj -c Release --no-restore
+
+      - name: Test
+        run: dotnet test src/Fingertippp.Tests/Fingertippp.Tests.csproj --no-build -c Release
+
+      - name: Publish single-file EXE (win-x64)
+        run: |
+          dotnet publish src/Fingertippp.App/Fingertippp.App.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/win-x64
+
+      - name: Upload published EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fingertippp-publish-win-x64
+          path: publish/win-x64
+
+      - name: Install WiX Toolset (choco)
+        shell: powershell
+        run: |
+          choco install wix -y
+
+      - name: Build MSI installer
+        shell: powershell
+        run: |
+          pwsh -File build\create-installer.ps1 -PublishDir "${{ github.workspace }}\publish\win-x64" -OutputDir "${{ github.workspace }}\artifacts"
+
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fingertippp-msi
+          path: artifacts
+
+  build-linux:
+    name: Build (Linux tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet restore src/Fingertippp.Core/Fingertippp.Core.csproj
+      - run: dotnet test src/Fingertippp.Tests/Fingertippp.Tests.csproj -c Release

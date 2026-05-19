@@ -1,0 +1,11 @@
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\obj\Debug\net8.0\Fingertippp.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\obj\Debug\net8.0\Fingertippp.Core.AssemblyInfoInputs.cache
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\obj\Debug\net8.0\Fingertippp.Core.AssemblyInfo.cs
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\obj\Debug\net8.0\Fingertippp.Core.csproj.CoreCompileInputs.cache
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\bin\Debug\net8.0\Fingertippp.Core.deps.json
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\bin\Debug\net8.0\Fingertippp.Core.dll
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\bin\Debug\net8.0\Fingertippp.Core.pdb
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\obj\Debug\net8.0\Fingertippp.Core.dll
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\obj\Debug\net8.0\refint\Fingertippp.Core.dll
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\obj\Debug\net8.0\Fingertippp.Core.pdb
+C:\Users\Aaryadev\Desktop\Fingertippp\src\Fingertippp.Core\obj\Debug\net8.0\ref\Fingertippp.Core.dll

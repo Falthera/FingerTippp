@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="Fingertippp" Language="1033" Version="1.0.0.0" Manufacturer="Fingertippp" UpgradeCode="d45b8b06-4c5f-4f2a-9e3b-1d2f3a4b5c6d">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine"/>
+
+    <MediaTemplate/>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="Fingertippp"/>
+      </Directory>
+    </Directory>
+
+    <Feature Id="MainFeature" Title="Fingertippp" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+
+    <UIRef Id="WixUI_Minimal" />
+  </Product>
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+        <!-- Files are harvested at build time by WiX heat in more advanced setups. For now, assume installer includes any files copied to INSTALLFOLDER before packaging. -->
+        <Component Id="cmpExecutable" Guid="a1b2c3d4-e5f6-4712-9876-0abcde123456">
+          <File Id="filMainExe" Source="publish\win-x64\Fingertippp.App.exe" KeyPath="yes" />
+          <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="Fingertippp" WorkingDirectory="INSTALLFOLDER" Advertise="no" />
+        </Component>
+      </ComponentGroup>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

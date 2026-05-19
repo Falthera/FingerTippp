@@ -1,0 +1,116 @@
+<Window x:Class="Fingertippp.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Fingertippp"
+        Width="1320"
+        Height="860"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource AppBackgroundBrush}">
+    <Grid Margin="24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="24" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" CornerRadius="18" Padding="18">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                    <TextBlock Text="Fingertippp" FontSize="26" FontWeight="SemiBold" />
+                    <TextBlock Text="Mouse latency diagnostics and safe optimization" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                    <TextBlock Text="Live Devices" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,8" />
+                    <ItemsControl ItemsSource="{Binding Devices}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#FF0F151D" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="12" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding FriendlyName}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding StatusSummary}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom">
+                    <ToggleButton Content="Safe Mode" IsChecked="{Binding IsSafeModeEnabled}" Margin="0,4,0,8" Padding="12,8" Background="#FF15202B" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource PanelBorderBrush}" />
+                    <ToggleButton Content="Expert Mode" IsChecked="{Binding IsExpertModeEnabled}" Margin="0,0,0,8" Padding="12,8" Background="#FF15202B" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource PanelBorderBrush}" />
+                    <Button Content="Refresh Devices" Command="{Binding RefreshCommand}" Padding="12,10" Background="{StaticResource AccentBrush}" Foreground="#FF081014" BorderThickness="0" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" CornerRadius="18" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Optimization Status" FontSize="16" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding SelectedDeviceSummary}" FontSize="22" FontWeight="SemiBold" Margin="0,8,0,4" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding SelectedRecommendationSummary}" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.25*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="0.95*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" CornerRadius="18" Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="Benchmark Snapshot" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16" />
+                        <UniformGrid Columns="2" Rows="2">
+                            <Border Background="#FF0F151D" CornerRadius="14" Padding="16" Margin="0,0,12,12">
+                                <StackPanel>
+                                    <TextBlock Text="Confidence" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBlock Text="{Binding ConfidenceDisplay}" FontSize="24" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#FF0F151D" CornerRadius="14" Padding="16" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <TextBlock Text="CPS" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBlock Text="{Binding EstimatedCpsDisplay}" FontSize="24" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#FF0F151D" CornerRadius="14" Padding="16" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="Jitter" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBlock Text="{Binding JitterDisplay}" FontSize="24" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#FF0F151D" CornerRadius="14" Padding="16">
+                                <StackPanel>
+                                    <TextBlock Text="Double Clicks" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBlock Text="{Binding DoubleClickDisplay}" FontSize="24" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <StackPanel Margin="0,18,0,0">
+                            <TextBlock Text="Method" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBlock Text="{Binding SelectedMethodDisplay}" FontSize="20" FontWeight="SemiBold" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" CornerRadius="18" Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="Diagnostics" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14" />
+                        <TextBlock Text="The first implementation focuses on safe classification, timing analysis, and strategy selection. Hardware-specific debounce changes are only exposed when a verified profile exists." Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" LineHeight="22" />
+                        <TextBlock Text="\nPlanned modules: Raw Input capture, HID communication, hotplug monitoring, benchmark export, and profile management." Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" LineHeight="22" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

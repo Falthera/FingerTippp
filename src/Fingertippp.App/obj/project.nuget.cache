@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "JMiNqyE/unE=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Aaryadev\\Desktop\\Fingertippp\\src\\Fingertippp.App\\Fingertippp.App.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Aaryadev\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.27\\microsoft.netcore.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\Aaryadev\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.27\\microsoft.windowsdesktop.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\Aaryadev\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.27\\microsoft.aspnetcore.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\Aaryadev\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.27\\microsoft.netcore.app.host.win-x64.8.0.27.nupkg.sha512"
+  ],
+  "logs": []
+}
