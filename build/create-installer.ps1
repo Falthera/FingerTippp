@@ -18,17 +18,43 @@ $msi = Join-Path (Resolve-Path $OutputDir).Path 'Fingertippp.msi'
 
 Write-Host "Building MSI from $PublishDir"
 
-$candle = "${env:ProgramFiles}\WiX Toolset v3.11\bin\candle.exe"
-$light = "${env:ProgramFiles}\WiX Toolset v3.11\bin\light.exe"
+function Find-WixTool {
+    param([string]$exeName)
+    # 1) Check PATH
+    $cmd = Get-Command $exeName -ErrorAction SilentlyContinue
+    if ($cmd) { return $cmd.Source }
 
-if (-not (Test-Path $candle) -or -not (Test-Path $light)) {
-    # try common alternate path
-    $candle = "C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe"
-    $light = "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe"
+    # 2) Common ProgramFiles locations (try wildcard versions)
+    $candidates = @(
+        "$env:ProgramFiles\WiX Toolset*\bin\$exeName",
+        "C:\Program Files (x86)\WiX Toolset*\bin\$exeName",
+        "$env:ProgramFiles\WiX Toolset\bin\$exeName",
+        "$env:ProgramFiles(x86)\WiX Toolset\bin\$exeName"
+    )
+    foreach ($p in $candidates) {
+        $found = Get-ChildItem -Path $p -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($found) { return $found.FullName }
+    }
+
+    # 3) Chocolatey install locations
+    $chocoPaths = @(
+        "$env:ProgramData\chocolatey\lib\wixtoolset\tools\*\$exeName",
+        "$env:ProgramData\chocolatey\lib\wixtoolset3\tools\*\$exeName",
+        "$env:ProgramData\chocolatey\lib\wix\tools\*\$exeName"
+    )
+    foreach ($p in $chocoPaths) {
+        $found = Get-ChildItem -Path $p -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($found) { return $found.FullName }
+    }
+
+    return $null
 }
 
-if (-not (Test-Path $candle) -or -not (Test-Path $light)) {
-    Write-Error "WiX tools (candle.exe/light.exe) not found. Ensure WiX Toolset is installed."
+$candle = Find-WixTool -exeName 'candle.exe'
+$light = Find-WixTool -exeName 'light.exe'
+
+if (-not $candle -or -not $light) {
+    Write-Error "WiX tools (candle.exe/light.exe) not found. Ensure WiX Toolset is installed or provide WiX binaries in PATH."
     exit 1
 }
 
