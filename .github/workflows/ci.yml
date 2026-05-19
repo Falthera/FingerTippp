@@ -29,7 +29,7 @@ jobs:
         run: dotnet build src/Fingertippp.App/Fingertippp.App.csproj -c Release --no-restore
 
       - name: Test
-        run: dotnet test src/Fingertippp.Tests/Fingertippp.Tests.csproj --no-build -c Release
+        run: dotnet test src/Fingertippp.Tests/Fingertippp.Tests.csproj -c Release
 
       - name: Publish single-file EXE (win-x64)
         run: |
